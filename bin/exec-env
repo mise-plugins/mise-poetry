@@ -17,8 +17,8 @@ setup_virtualenv() {
       return
     fi
     echoerr "mise-poetry: No virtualenv exists. Executing \`poetry install\` to create one."
-    "$(poetry_bin)" install
-    VIRTUAL_ENV="$("$(poetry_bin)" env info --path)"
+    poetry_bin install
+    VIRTUAL_ENV="$(poetry_bin env info --path)"
   fi
 
   POETRY_ACTIVE=1

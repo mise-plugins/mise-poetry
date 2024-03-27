@@ -9,7 +9,7 @@ echoerr() {
 }
 
 poetry_bin() {
-  echo "$MISE_INSTALL_PATH/bin/poetry"
+  "$MISE_INSTALL_PATH/bin/poetry" "$@"
 }
 
 poetry_venv() {
@@ -25,6 +25,6 @@ poetry_venv() {
     echoerr "mise-poetry: No pyproject.toml found. Execute \`poetry init\` to create \`$pyproject\` first."
     return
   fi
-  "$(poetry_bin)" env info --path 2>/dev/null
+  poetry_bin -C "${pyproject%/*}" env info --path 2>/dev/null
   true
 }
