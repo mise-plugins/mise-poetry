@@ -44,9 +44,9 @@ install_poetry() {
   fi
 
   if [ "$install_type" = "version" ]; then
-    curl -sSL "$install_url" | POETRY_HOME=$install_path python3 - --version "$version" $flags
+    curl -sSL "$install_url" | sed 's/symlinks=False/symlinks=True/' | POETRY_HOME=$install_path python3 - --version "$version" $flags
   elif [ "$install_type" = "ref" ]; then
-    curl -sSL "$install_url" | POETRY_HOME=$install_path python3 - --git https://github.com/python-poetry/poetry.git@"$version" $flags
+    curl -sSL "$install_url" | sed 's/symlinks=False/symlinks=True/' | POETRY_HOME=$install_path python3 - --git https://github.com/python-poetry/poetry.git@"$version" $flags
   else
     fail "unknown install type"
   fi
