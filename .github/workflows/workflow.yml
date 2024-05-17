@@ -20,15 +20,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: jdx/mise-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          cache: false
+      - run: |
+          curl mise.run | sh
+          echo 'export PATH=$HOME/.local/bin:$PATH' >> $GITHUB_ENV
       - run: mkdir -p ~/.local/share/mise/plugins
       - run: ln -s $PWD ~/.local/share/mise/plugins/poetry
-      - run: mise i poetry@latest
+      - run: mise i poetry@latest python
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: mise x poetry@latest -- poetry --version
+      - run: cat poetry-installer-error-*.log && exit 1
+        if: failure()
 
   lint:
     runs-on: ubuntu-latest
