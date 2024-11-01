@@ -6,6 +6,11 @@ set -euo pipefail
 source "$MISE_PLUGIN_PATH/bin/utils.sh"
 
 setup_virtualenv() {
+  # if `uv` is being used, exit early and let the user manage venv activation
+  if [[ -f "uv.lock" ]]; then
+    return
+  fi
+
   VIRTUAL_ENV="$(poetry_venv)"
   if [[ -z "$VIRTUAL_ENV" ]]; then
     return
