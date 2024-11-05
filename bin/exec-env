@@ -12,11 +12,7 @@ setup_virtualenv() {
   fi
 
   VIRTUAL_ENV="$(poetry_venv)"
-  if [[ -z "$VIRTUAL_ENV" ]]; then
-    return
-  fi
-
-  if [[ ! -d "$VIRTUAL_ENV" ]]; then
+  if [[ -z "$VIRTUAL_ENV" ]] || [[ ! -d "$VIRTUAL_ENV" ]]; then
     if [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "true" ]] && [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "1" ]]; then
       echoerr "mise-poetry: Virtualenv does not exist at $VIRTUAL_ENV. Execute \`poetry install\` to create one."
       return
