@@ -16,7 +16,7 @@ setup_virtualenv() {
   poetry_venv_exit_code=$?
   set -e
 
-  if [[ $poetry_venv_exit_code -eq 2 ]] || [[ -z "$VIRTUAL_ENV" ]]; then
+  if [[ $poetry_venv_exit_code -eq 2 ]]; then
     return
   fi
 
