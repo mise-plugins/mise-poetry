@@ -11,10 +11,16 @@ setup_virtualenv() {
     return
   fi
 
+  set +e
   VIRTUAL_ENV="$(poetry_venv)"
-  
-  pyproject="$(eval "echo ${MISE_TOOL_OPTS__PYPROJECT-}")"
-  if [ "$pyproject" != "" ] && ([[ -z "$VIRTUAL_ENV" ]] || [[ ! -d "$VIRTUAL_ENV" ]]); then
+  poetry_venv_exit_code=$?
+  set -e
+
+  if [[ $poetry_venv_exit_code -eq 2 ]] || [[ -z "$VIRTUAL_ENV" ]]; then
+    return
+  fi
+
+  if [[ ! -d "$VIRTUAL_ENV" ]]; then
     if [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "true" ]] && [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "1" ]]; then
       echoerr "mise-poetry: Virtualenv does not exist at $VIRTUAL_ENV. Execute \`poetry install\` to create one."
       return
