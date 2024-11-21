@@ -16,14 +16,14 @@ poetry_venv() {
   local pyproject
   pyproject="$(eval "echo ${MISE_TOOL_OPTS__PYPROJECT-}")"
   if [ "$pyproject" = "" ]; then
-    return
+    return 1
   fi
   if [[ $pyproject != /* ]] && [[ -n ${MISE_PROJECT_ROOT-} ]]; then
     pyproject="${MISE_PROJECT_ROOT-}/$pyproject"
   fi
   if [[ ! -f $pyproject ]]; then
     echoerr "mise-poetry: No pyproject.toml found. Execute \`poetry init\` to create \`$pyproject\` first."
-    return
+    return 1
   fi
   poetry_bin -C "${pyproject%/*}" env info --path 2>/dev/null
   true
