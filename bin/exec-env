@@ -22,10 +22,8 @@ setup_virtualenv() {
 
   if [[ ! -d "$VIRTUAL_ENV" ]]; then
     if [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "true" ]] && [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "1" ]]; then
-      echoerr "mise-poetry: Virtualenv does not exist at $VIRTUAL_ENV. Execute \`poetry install\` to create one."
       return
     fi
-    echoerr "mise-poetry: No virtualenv exists. Executing \`poetry install\` to create one."
     poetry_bin install
     VIRTUAL_ENV="$(poetry_bin env info --path)"
   fi
