@@ -12,7 +12,7 @@ setup_virtualenv() {
   fi
 
   set +e
-  VIRTUAL_ENV="$(poetry_venv)"
+  venv="$(poetry_venv)"
   poetry_venv_exit_code=$?
   set -e
 
@@ -20,17 +20,17 @@ setup_virtualenv() {
     return
   fi
 
-  if [[ ! -d "$VIRTUAL_ENV" ]]; then
+  if [[ ! -d "$venv" ]]; then
     if [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "true" ]] && [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "1" ]]; then
       return
     fi
     poetry_bin install
-    VIRTUAL_ENV="$(poetry_bin env info --path)"
+    venv="$(poetry_bin env info --path)"
   fi
 
   POETRY_ACTIVE=1
-  MISE_ADD_PATH="$VIRTUAL_ENV/bin"
-  export VIRTUAL_ENV POETRY_ACTIVE MISE_ADD_PATH
+  MISE_ADD_PATH="$venv/bin"
+  export VIRTUAL_ENV="$venv" POETRY_ACTIVE MISE_ADD_PATH
 }
 
 setup_virtualenv
