@@ -45,6 +45,9 @@ poetry = {version='latest', pyproject='pyproject.toml'}
 python = '3.11' # must be after poetry so the poetry bin is first in PATH
 ```
 
+You can also set `MISE_POETRY_VENV_AUTO=1` to automatically activate the virtualenv if the  
+project contains both `pyproject.toml` and `poetry.lock` files.
+
 Set `MISE_POETRY_AUTO_INSTALL=1` to automatically run `poetry install` to create the virtualenv.
 
 ## License
