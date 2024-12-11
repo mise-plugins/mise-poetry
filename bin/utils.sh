@@ -15,8 +15,14 @@ poetry_bin() {
 poetry_venv() {
   local pyproject
   pyproject="$(eval "echo ${MISE_TOOL_OPTS__PYPROJECT-}")"
-  if [ "$pyproject" = "" ]; then
+  if [[ "${MISE_POETRY_VENV_AUTO:-}" != "true" ]] && [[ "${MISE_POETRY_VENV_AUTO:-}" != "1" ]]; then
+    if [ "$pyproject" = "" ]; then
+      return 1
+    fi
+  elif [[ ! -f "poetry.lock" ]] | [[ ! -f "pyproject.toml" ]]; then
     return 1
+  else
+    pyproject="pyproject.toml"
   fi
   if [[ $pyproject != /* ]] && [[ -n ${MISE_PROJECT_ROOT-} ]]; then
     pyproject="${MISE_PROJECT_ROOT-}/$pyproject"
