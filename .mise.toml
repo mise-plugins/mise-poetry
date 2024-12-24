@@ -1,0 +1,3 @@
+[tools]
+shellcheck = "latest"
+shfmt = "latest"

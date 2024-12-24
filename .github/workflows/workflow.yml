@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: 0 0 * * 5
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
 jobs:
   test:
     strategy:
@@ -21,23 +24,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - run: |
-          curl -sSL https://mise.run | sh
-          echo 'export PATH=$HOME/.local/bin:$PATH' >> $GITHUB_ENV
+      - name: Mise
+        uses: jdx/mise-action@v2
 
       - run: mkdir -p ~/.local/share/mise/plugins
       - run: ln -s $PWD ~/.local/share/mise/plugins/poetry
       - run: mise i poetry@latest python
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: mise x poetry@latest -- poetry --version
       - run: cat poetry-installer-error-*.log && exit 1
         if: failure()
 
       - name: Run tests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         run: |-
           mise config set settings.trusted_config_paths "${PWD}/tests"
           mise -C "${PWD}/tests" install
@@ -50,12 +48,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install ShellCheck
-        run: brew install shellcheck
+      - name: Mise
+        uses: jdx/mise-action@v2
 
       - name: Run ShellCheck
         run: make lint
@@ -67,12 +61,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install shfmt
-        run: brew update && brew install shfmt
+      - name: Mise
+        uses: jdx/mise-action@v2
 
       - name: Run shfmt
         run: make format-check
