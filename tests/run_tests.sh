@@ -28,6 +28,8 @@ for DIR in "${FILES[@]}"; do
   else
     FAILURE+=("${NAME}")
   fi
+
+  printf '\n'
 done
 
 declare -i EXIT=0

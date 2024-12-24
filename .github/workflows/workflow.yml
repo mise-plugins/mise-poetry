@@ -31,11 +31,8 @@ jobs:
       - name: Mise
         uses: jdx/mise-action@v2
 
-      - run: mkdir -p ~/.local/share/mise/plugins
-      - run: ln -s $PWD ~/.local/share/mise/plugins/poetry
-      - run: mise i poetry@latest python
-        continue-on-error: true
-      - run: mise x poetry@latest -- poetry --version
+      - run: mise plugins link --force "${PWD}"
+      - run: mise --verbose x poetry@latest -- poetry --version
       - run: cat poetry-installer-error-*.log && exit 1
         if: failure()
 
