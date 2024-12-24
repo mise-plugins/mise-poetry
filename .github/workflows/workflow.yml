@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - run: |
-          curl mise.run | sh
+          curl -sSL https://mise.run | sh
           echo 'export PATH=$HOME/.local/bin:$PATH' >> $GITHUB_ENV
 
       - run: mkdir -p ~/.local/share/mise/plugins
