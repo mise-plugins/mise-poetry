@@ -1,8 +1,4 @@
 #:schema https://raw.githubusercontent.com/jdx/mise/main/schema/mise.json
 
-[tools]
-python = { version = "3.12" }
-"aqua:bats-core/bats-core" = "latest"
-
 [env]
 XDG_DATA_HOME = "{{ env.HOME }}/.local/share"

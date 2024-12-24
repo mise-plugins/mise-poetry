@@ -31,8 +31,10 @@ jobs:
       - name: Mise
         uses: jdx/mise-action@v2
 
-      - run: mise plugins link --force "${PWD}"
-      - run: mise --verbose x poetry@latest -- poetry --version
+      - name: Link the plugin
+        run: mise plugins link --force "${PWD}"
+      - name: Smoke test
+        run: mise --verbose x poetry@latest -- poetry --version
       - run: cat poetry-installer-error-*.log && exit 1
         if: failure()
 
