@@ -1,3 +1,5 @@
+#:schema https://raw.githubusercontent.com/jdx/mise/main/schema/mise.json
+
 [tools]
 python = { version = "3.12" }
 poetry = { version = "latest", pyproject="{{ config_root }}/pyproject.toml" }

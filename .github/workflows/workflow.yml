@@ -36,6 +36,8 @@ jobs:
         if: failure()
 
       - name: Run tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         run: |-
           mise config set settings.trusted_config_paths "${PWD}/tests"
           mise -C "${PWD}/tests" install

@@ -2,7 +2,8 @@
 
 [tools]
 python = { version = "3.12" }
-"aqua:bats-core/bats-core" = "latest"
+poetry = { version = "latest" }
 
 [env]
-XDG_DATA_HOME = "{{ env.HOME }}/.local/share"
+MISE_POETRY_AUTO_INSTALL = "true"
+MISE_POETRY_VENV_AUTO = "false"
