@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-set -u
+set -eu
 shopt -s nullglob
 
 BASE_DIR=${0%/*}
