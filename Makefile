@@ -12,3 +12,7 @@ format-check:
 lint:
 	shellcheck $(SH_SRCFILES)
 .PHONY: lint
+
+test:
+	tests/run_tests.sh
+.PHONY: test

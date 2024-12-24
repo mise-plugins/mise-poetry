@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "test"
+version = "0.0.0"
+description = "Test"
+authors = [
+  "Josh Bode <josh@joincheckmate.com>",
+]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+pbr = "^6.0.0"

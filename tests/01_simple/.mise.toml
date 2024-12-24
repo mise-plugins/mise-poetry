@@ -1,0 +1,7 @@
+[tools]
+python = { version = "3.12" }
+poetry = { version = "latest", pyproject="{{ config_root }}/pyproject.toml" }
+
+[env]
+MISE_POETRY_AUTO_INSTALL = "true"
+MISE_POETRY_VENV_AUTO = "false"
