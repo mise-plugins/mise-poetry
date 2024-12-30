@@ -1,36 +1,57 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 set -euo pipefail
 
+pyproject=${MISE_TOOL_OPTS__PYPROJECT-}
+if [[ -n ${MISE_PROJECT_ROOT-} && -n ${pyproject} && ${pyproject} != /* ]]; then
+  pyproject="${MISE_PROJECT_ROOT}/${pyproject}"
+fi
+
 # shellcheck source-path=.
-source "$MISE_PLUGIN_PATH/bin/utils.sh"
+source "${MISE_PLUGIN_PATH}/bin/utils.sh"
 
 setup_virtualenv() {
+  if [[ -z ${pyproject} ]]; then
+    # tool is installed (maybe globally) but project is not activated
+    return
+  elif [[ ! -f ${pyproject} ]]; then
+    echoerr "Project file not found (${pyproject}). Execute \`poetry init\` to create it."
+    return
+  fi
+
+  local project_root=${pyproject%/*}
+
   # if `uv` is being used, exit early and let the user manage venv activation
-  if [[ -f "uv.lock" ]]; then
+  if [[ -f "${project_root}/uv.lock" ]]; then
     return
   fi
 
-  set +e
-  venv="$(poetry_venv)"
-  poetry_venv_exit_code=$?
-  set -e
-
-  if [[ $poetry_venv_exit_code -eq 1 ]]; then
-    return
-  fi
-
-  if [[ ! -d "$venv" ]]; then
-    if [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "true" ]] && [[ "${MISE_POETRY_AUTO_INSTALL:-}" != "1" ]]; then
+  # don't activate environment if lock file isn't present
+  if is_enabled MISE_POETRY_VENV_AUTO; then
+    if [[ ! -f "${project_root}/poetry.lock" ]]; then
       return
     fi
-    poetry_bin install
-    venv="$(poetry_bin env info --path)"
   fi
 
-  POETRY_ACTIVE=1
-  MISE_ADD_PATH="$venv/bin"
-  export VIRTUAL_ENV="$venv" POETRY_ACTIVE MISE_ADD_PATH
+  local virtual_env
+  if ! virtual_env=$(poetry_venv "${project_root}"); then
+    # run a dummy command to ensure the venv exists (creating it if possible)
+    poetry_bin "${project_root}" run true
+
+    if ! virtual_env=$(poetry_venv "${project_root}"); then
+      echoerr "Unable to create/activate virtual environment."
+      return
+    fi
+
+    if is_enabled MISE_POETRY_AUTO_INSTALL; then
+      echoerr "Executing \`poetry install\` to populate virtual environment."
+      poetry_bin "${project_root}" install
+    fi
+  fi
+
+  export POETRY_ACTIVE=1
+  export VIRTUAL_ENV=${virtual_env}
+  export MISE_ADD_PATH="${virtual_env}/bin"
 }
 
 setup_virtualenv

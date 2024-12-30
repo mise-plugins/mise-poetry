@@ -1,36 +1,44 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
-if [ "${MISE_TRACE-}" = "1" ]; then
+if [[ ${MISE_TRACE-} == 1 ]]; then
   set -x
 fi
 
 echoerr() {
-  echo "$1" >&2
+  printf 'mise-poetry: %s\n' "$@" >&2
+}
+
+is_enabled() {
+  local name=$1
+  local value=${!name:-false}
+  [[ ${value} == "true" || ${value} == "1" ]]
 }
 
 poetry_bin() {
-  "$MISE_INSTALL_PATH/bin/poetry" "$@"
+  local project_root=$1
+  shift
+
+  local args=(
+    --directory "${project_root}"
+    --no-interaction
+  )
+  if is_enabled MISE_PLUGIN_COLOR; then
+    args+=(--ansi)
+  fi
+
+  "${MISE_INSTALL_PATH}/bin/poetry" "${args[@]}" "$@"
 }
 
 poetry_venv() {
-  local pyproject
-  pyproject="$(eval "echo ${MISE_TOOL_OPTS__PYPROJECT-}")"
-  if [[ "${MISE_POETRY_VENV_AUTO:-}" != "true" ]] && [[ "${MISE_POETRY_VENV_AUTO:-}" != "1" ]]; then
-    if [ "$pyproject" = "" ]; then
-      return 1
-    fi
-  elif [[ ! -f "poetry.lock" ]] | [[ ! -f "pyproject.toml" ]]; then
-    return 1
-  else
-    pyproject="pyproject.toml"
-  fi
-  if [[ $pyproject != /* ]] && [[ -n ${MISE_PROJECT_ROOT-} ]]; then
-    pyproject="${MISE_PROJECT_ROOT-}/$pyproject"
-  fi
-  if [[ ! -f $pyproject ]]; then
-    echoerr "mise-poetry: No pyproject.toml found. Execute \`poetry init\` to create \`$pyproject\` first."
+  local project_root=$1
+  shift
+
+  local virtual_env
+  virtual_env=$(poetry_bin "${project_root}" env info --path 2> /dev/null)
+
+  if ! [[ -n ${virtual_env} && -d "${virtual_env}" ]]; then
     return 1
   fi
-  poetry_bin -C "${pyproject%/*}" env info --path 2>/dev/null
-  true
+
+  printf '%s' "${virtual_env}"
 }

@@ -23,8 +23,8 @@ list_all_versions() {
 
   while [[ -n ${URL} ]]; do
     RESULT=$(curl -qsSfL --include "$@" "${URL}")
-    grep -o "${LINE_RE}" <<<"${RESULT}"
-    if LINK=$(grep -m1 '^link: ' <<<"${RESULT}") && [[ ${LINK} =~ ${NEXT_LINK} ]]; then
+    grep -o "${LINE_RE}" <<< "${RESULT}"
+    if LINK=$(grep -m1 '^link: ' <<< "${RESULT}") && [[ ${LINK} =~ ${NEXT_LINK} ]]; then
       URL=${BASH_REMATCH[1]}
     else
       break

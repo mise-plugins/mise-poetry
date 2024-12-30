@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: 0 0 * * 5
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   test:
     strategy:
@@ -18,34 +21,38 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - run: |
-          curl mise.run | sh
-          echo 'export PATH=$HOME/.local/bin:$PATH' >> $GITHUB_ENV
-      - run: mkdir -p ~/.local/share/mise/plugins
-      - run: ln -s $PWD ~/.local/share/mise/plugins/poetry
-      - run: mise i poetry@latest python
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: mise x poetry@latest -- poetry --version
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Mise
+        uses: jdx/mise-action@v2
+
+      - name: Link the plugin
+        run: mise plugins link --force "${PWD}"
+      - name: Smoke test
+        run: mise --verbose x poetry@latest -- poetry --version
       - run: cat poetry-installer-error-*.log && exit 1
         if: failure()
+
+      - name: Install current Bash on macOS
+        if: runner.os == 'macOS'
+        run: brew install bash
+
+      - name: Run tests
+        run: |-
+          mise config set settings.trusted_config_paths "${PWD}/tests"
+          mise -C "${PWD}/tests" install
+          make test
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install ShellCheck
-        run: brew install shellcheck
+      - name: Mise
+        uses: jdx/mise-action@v2
 
       - name: Run ShellCheck
         run: make lint
@@ -55,14 +62,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Install shfmt
-        run: brew update && brew install shfmt
+      - name: Mise
+        uses: jdx/mise-action@v2
 
       - name: Run shfmt
         run: make format-check

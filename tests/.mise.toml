@@ -1,0 +1,4 @@
+#:schema https://raw.githubusercontent.com/jdx/mise/main/schema/mise.json
+
+[env]
+XDG_DATA_HOME = "{{ env.HOME }}/.local/share"
