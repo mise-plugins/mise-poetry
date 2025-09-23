@@ -23,6 +23,9 @@ for DIR in "${FILES[@]}"; do
   NAME=${DIR#"${BASE_DIR}/"}
   printf '█ %s\n\n' "${NAME}"
 
+  # unset these if they've been set externally
+  unset VIRTUAL_ENV POETRY_ACTIVE
+
   if mise exec -C "${DIR}" -- bats -r "${DIR}"; then
     SUCCESS+=("${NAME}")
   else
